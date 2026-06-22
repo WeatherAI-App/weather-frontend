@@ -38,7 +38,11 @@ export default function CurrentWeatherCard({ current, location, isCelsius, onTog
           <p className="text-blue-200">{current.condition}</p>
           <p className="text-blue-200 text-sm">Feels like {Math.round(feelsLike)}{unit}</p>
         </div>
-        <WeatherIcon condition={current.condition} size="text-6xl md:text-8xl" />
+        <WeatherIcon 
+            condition={current.condition} 
+            size="text-6xl md:text-8xl"
+            time={new Date().getHours() + ":00"}
+        />
       </div>
 
       {/* Toggle unit */}

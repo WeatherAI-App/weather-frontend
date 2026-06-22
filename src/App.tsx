@@ -9,7 +9,7 @@ import DailyForecastCard from "./components/DailyForecastCard";
 import SearchBar from "./components/SearchBar";
 
 export default function App() {
-  const { data, loading, error, searchByCity, retryGPS, refresh } = useWeather();
+  const { data, loading, error, searchByCity, retryGPS, refresh, lastUpdated } = useWeather();
   const { isDark, toggleDark } = useDarkMode();
   const [isCelsius, setIsCelsius] = useState(true);
 
@@ -119,6 +119,7 @@ export default function App() {
         {/* Footer */}
         <p className={`text-center text-xs pb-4 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
           Weather data from Open-Meteo • Air quality from Open-Meteo AQI
+          {lastUpdated && ` • Updated ${lastUpdated}`}
         </p>
 
       </div>

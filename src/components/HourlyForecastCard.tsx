@@ -27,7 +27,7 @@ export default function HourlyForecastCard({ hourly, isCelsius, isDark }: Props)
               ${isDark ? "bg-gray-700" : "bg-blue-50"}`}
           >
             <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>{h.time}</p>
-            <WeatherIcon condition={h.condition} size="text-2xl" />
+            <WeatherIcon condition={h.condition} size="text-2xl" time={h.time} />
             <p className={`font-semibold ${isDark ? "text-white" : "text-gray-800"}`}>
               {isCelsius ? Math.round(h.temp) : toF(h.temp)}{unit}
             </p>

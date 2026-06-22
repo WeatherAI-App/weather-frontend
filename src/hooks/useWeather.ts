@@ -5,9 +5,9 @@ import type { WeatherResponse } from "../types/weather";
 const API_BASE = "http://localhost:8080/api/weather";
 const LAST_CITY_KEY = "weatherai_last_city";
 const LAST_DATA_KEY = "weatherai_last_data";
-const CACHE_DURATION = 30 * 60 * 1000;
+const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
 
-// ── Cache helpers (outside hook) ──────────────────
+// ── Cache helpers ─────────────────────────────────
 const saveToCache = (weatherData: WeatherResponse) => {
   localStorage.setItem(LAST_DATA_KEY, JSON.stringify({
     data: weatherData,
@@ -32,6 +32,7 @@ export const useWeather = () => {
   const [data, setData] = useState<WeatherResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   const fetchByCoords = async (lat: number, lon: number) => {
     try {
@@ -42,6 +43,7 @@ export const useWeather = () => {
       });
       setData(response.data);
       saveToCache(response.data);
+      setLastUpdated(new Date().toLocaleTimeString());
       localStorage.removeItem(LAST_CITY_KEY);
     } catch (err) {
       setError("Failed to fetch weather data. Please try again.");
@@ -59,6 +61,7 @@ export const useWeather = () => {
       });
       setData(response.data);
       saveToCache(response.data);
+      setLastUpdated(new Date().toLocaleTimeString());
       localStorage.setItem(LAST_CITY_KEY, city);
     } catch (err) {
       setError(`City "${city}" not found. Please try another name.`);
@@ -110,6 +113,7 @@ export const useWeather = () => {
     if (cached) {
       setData(cached);
       setLoading(false);
+      setLastUpdated("cached");
       return;
     }
     const lastCity = localStorage.getItem(LAST_CITY_KEY);
@@ -120,5 +124,5 @@ export const useWeather = () => {
     getGPSLocation();
   }, []);
 
-  return { data, loading, error, searchByCity, retryGPS, refresh };
+  return { data, loading, error, searchByCity, retryGPS, refresh, lastUpdated };
 };
