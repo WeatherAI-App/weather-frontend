@@ -16,25 +16,29 @@ export default function CurrentWeatherCard({ current, location, isCelsius, onTog
   const unit = isCelsius ? "°C" : "°F";
 
   return (
-    <div className="bg-gradient-to-br from-blue-600 to-indigo-800 rounded-3xl p-6 text-white shadow-xl">
-      
+    <div className="bg-gradient-to-br from-blue-600 to-indigo-800 rounded-3xl p-5 md:p-6 text-white shadow-xl">
+
       {/* Location */}
       <div className="mb-4">
-        <p className="text-blue-200 text-sm">📍 {location.road && `${location.road}, `}{location.district}</p>
-        <h1 className="text-2xl font-bold">{location.city}, {location.country}</h1>
+        <p className="text-blue-200 text-xs md:text-sm truncate">
+          📍 {location.road && `${location.road}, `}{location.district}
+        </p>
+        <h1 className="text-xl md:text-2xl font-bold truncate">
+          {location.city}, {location.country}
+        </h1>
       </div>
 
       {/* Main temp */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <div className="flex items-end gap-2">
-            <span className="text-7xl font-thin">{Math.round(temp)}</span>
-            <span className="text-3xl mb-3">{unit}</span>
+          <div className="flex items-end gap-1">
+            <span className="text-6xl md:text-7xl font-thin">{Math.round(temp)}</span>
+            <span className="text-2xl md:text-3xl mb-2">{unit}</span>
           </div>
           <p className="text-blue-200">{current.condition}</p>
           <p className="text-blue-200 text-sm">Feels like {Math.round(feelsLike)}{unit}</p>
         </div>
-        <WeatherIcon condition={current.condition} size="text-8xl" />
+        <WeatherIcon condition={current.condition} size="text-6xl md:text-8xl" />
       </div>
 
       {/* Toggle unit */}
@@ -45,36 +49,36 @@ export default function CurrentWeatherCard({ current, location, isCelsius, onTog
         Switch to {isCelsius ? "°F" : "°C"}
       </button>
 
-      {/* Stats grid */}
-      <div className="grid grid-cols-3 gap-3">
+      {/* Stats grid — 2 cols on mobile, 3 on desktop */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
         <div className="bg-white/10 rounded-2xl p-3 text-center">
-          <p className="text-2xl">💧</p>
-          <p className="text-lg font-semibold">{current.humidity}%</p>
+          <p className="text-xl md:text-2xl">💧</p>
+          <p className="text-base md:text-lg font-semibold">{current.humidity}%</p>
           <p className="text-blue-200 text-xs">Humidity</p>
         </div>
         <div className="bg-white/10 rounded-2xl p-3 text-center">
-          <p className="text-2xl">💨</p>
-          <p className="text-lg font-semibold">{current.windSpeed} km/h</p>
+          <p className="text-xl md:text-2xl">💨</p>
+          <p className="text-base md:text-lg font-semibold">{current.windSpeed} km/h</p>
           <p className="text-blue-200 text-xs">Wind {current.windDirection}</p>
         </div>
         <div className="bg-white/10 rounded-2xl p-3 text-center">
-          <p className="text-2xl">🌧️</p>
-          <p className="text-lg font-semibold">{current.rainProbability}%</p>
+          <p className="text-xl md:text-2xl">🌧️</p>
+          <p className="text-base md:text-lg font-semibold">{current.rainProbability}%</p>
           <p className="text-blue-200 text-xs">Rain</p>
         </div>
         <div className="bg-white/10 rounded-2xl p-3 text-center">
-          <p className="text-2xl">🔆</p>
-          <p className="text-lg font-semibold">{current.uvIndex}</p>
+          <p className="text-xl md:text-2xl">🔆</p>
+          <p className="text-base md:text-lg font-semibold">{current.uvIndex}</p>
           <p className="text-blue-200 text-xs">UV Index</p>
         </div>
         <div className="bg-white/10 rounded-2xl p-3 text-center">
-          <p className="text-2xl">👁️</p>
-          <p className="text-lg font-semibold">{current.visibility.toFixed(1)} km</p>
+          <p className="text-xl md:text-2xl">👁️</p>
+          <p className="text-base md:text-lg font-semibold">{current.visibility.toFixed(1)} km</p>
           <p className="text-blue-200 text-xs">Visibility</p>
         </div>
         <div className="bg-white/10 rounded-2xl p-3 text-center">
-          <p className="text-2xl">🌅</p>
-          <p className="text-lg font-semibold">{current.sunrise}</p>
+          <p className="text-xl md:text-2xl">🌅</p>
+          <p className="text-base md:text-lg font-semibold">{current.sunrise}</p>
           <p className="text-blue-200 text-xs">Sunrise</p>
         </div>
       </div>

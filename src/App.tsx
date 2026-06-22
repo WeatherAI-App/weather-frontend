@@ -25,15 +25,16 @@ export default function App() {
         {/* Header */}
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
+            <h1 className={`text-xl md:text-2xl font-bold 
+              ${isDark ? "text-white" : "text-gray-800"}`}>
               ⛅ Weather AI
             </h1>
-            <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+            <p className={`text-xs md:text-sm 
+              ${isDark ? "text-gray-400" : "text-gray-500"}`}>
               Powered by AI
             </p>
           </div>
           <div className="flex gap-2">
-            {/* Dark mode toggle */}
             <button
               onClick={toggleDark}
               title={isDark ? "Switch to light mode" : "Switch to dark mode"}
@@ -46,17 +47,17 @@ export default function App() {
             >
               {isDark ? "🌙" : "☀️"}
             </button>
-            {/* Refresh button */}
             {data && (
               <button
                 onClick={refresh}
-                className={`px-4 py-2 rounded-2xl border shadow-sm transition text-sm
+                className={`w-10 h-10 flex items-center justify-center rounded-2xl 
+                  border shadow-sm transition text-lg
                   ${isDark
-                    ? "bg-gray-700 hover:bg-gray-600 text-white border-gray-600"
-                    : "bg-white hover:bg-gray-50 text-gray-600 border-gray-200"
+                    ? "bg-gray-700 hover:bg-gray-600 border-gray-600"
+                    : "bg-white hover:bg-gray-50 border-gray-200"
                   }`}
               >
-                🔄 Refresh
+                🔄
               </button>
             )}
           </div>
