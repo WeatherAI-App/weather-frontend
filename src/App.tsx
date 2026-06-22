@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useWeather } from "./hooks/useWeather";
+import { useDarkMode } from "./hooks/useDarkMode";
 import CurrentWeatherCard from "./components/CurrentWeatherCard";
 import AISuggestionCard from "./components/AISuggestionCard";
 import AirQualityCard from "./components/AirQualityCard";
@@ -8,37 +9,88 @@ import DailyForecastCard from "./components/DailyForecastCard";
 import SearchBar from "./components/SearchBar";
 
 export default function App() {
-  const { data, loading, error, searchByCity, retryGPS } = useWeather();
+  const { data, loading, error, searchByCity, retryGPS, refresh } = useWeather();
+  const { isDark, toggleDark } = useDarkMode();
   const [isCelsius, setIsCelsius] = useState(true);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-blue-100 p-4 md:p-8">
+    <div className={`min-h-screen p-4 md:p-8 transition-colors duration-300
+      ${isDark
+        ? "bg-gradient-to-br from-gray-900 to-slate-800"
+        : "bg-gradient-to-br from-slate-100 to-blue-100"
+      }`}
+    >
       <div className="max-w-2xl mx-auto flex flex-col gap-4">
 
         {/* Header */}
-        <div className="text-center mb-2">
-          <h1 className="text-2xl font-bold text-gray-800">⛅ Weather AI</h1>
-          <p className="text-gray-500 text-sm">Powered by AI</p>
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
+              ⛅ Weather AI
+            </h1>
+            <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+              Powered by AI
+            </p>
+          </div>
+          <div className="flex gap-2">
+            {/* Dark mode toggle */}
+            <button
+              onClick={toggleDark}
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              className={`w-10 h-10 flex items-center justify-center rounded-2xl 
+                border shadow-sm transition text-lg
+                ${isDark
+                  ? "bg-gray-700 hover:bg-gray-600 border-gray-600"
+                  : "bg-white hover:bg-gray-50 border-gray-200"
+                }`}
+            >
+              {isDark ? "🌙" : "☀️"}
+            </button>
+            {/* Refresh button */}
+            {data && (
+              <button
+                onClick={refresh}
+                className={`px-4 py-2 rounded-2xl border shadow-sm transition text-sm
+                  ${isDark
+                    ? "bg-gray-700 hover:bg-gray-600 text-white border-gray-600"
+                    : "bg-white hover:bg-gray-50 text-gray-600 border-gray-200"
+                  }`}
+              >
+                🔄 Refresh
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Search Bar — always visible */}
-        <SearchBar onSearch={searchByCity} onRetryGPS={retryGPS} />
+        {/* Search Bar */}
+        <SearchBar onSearch={searchByCity} onRetryGPS={retryGPS} isDark={isDark} />
 
         {/* Loading */}
         {loading && (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-600">
+          <div className="flex flex-col items-center justify-center py-20">
             <div className="text-6xl mb-4 animate-bounce">🌤️</div>
-            <p className="text-xl font-semibold">Getting your weather...</p>
-            <p className="text-gray-400 text-sm mt-2">Please allow location access</p>
+            <p className={`text-xl font-semibold ${isDark ? "text-white" : "text-gray-600"}`}>
+              Getting your weather...
+            </p>
+            <p className={`text-sm mt-2 ${isDark ? "text-gray-400" : "text-gray-400"}`}>
+              Please allow location access
+            </p>
           </div>
         )}
 
         {/* Error */}
         {error && !loading && (
-          <div className="bg-red-50 border border-red-200 rounded-3xl p-6 text-center">
+          <div className={`border rounded-3xl p-6 text-center
+            ${isDark
+              ? "bg-red-900/30 border-red-700"
+              : "bg-red-50 border-red-200"
+            }`}
+          >
             <p className="text-4xl mb-3">😕</p>
-            <p className="text-red-600 font-semibold">{error}</p>
-            <p className="text-gray-500 text-sm mt-2">
+            <p className={`font-semibold ${isDark ? "text-red-400" : "text-red-600"}`}>
+              {error}
+            </p>
+            <p className={`text-sm mt-2 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
               Try searching for a city above
             </p>
           </div>
@@ -58,13 +110,13 @@ export default function App() {
               bestTime={data.current.bestTimeOutside}
             />
             <AirQualityCard airQuality={data.airQuality} />
-            <HourlyForecastCard hourly={data.hourly} isCelsius={isCelsius} />
-            <DailyForecastCard daily={data.daily} isCelsius={isCelsius} />
+            <HourlyForecastCard hourly={data.hourly} isCelsius={isCelsius} isDark={isDark} />
+            <DailyForecastCard daily={data.daily} isCelsius={isCelsius} isDark={isDark} />
           </>
         )}
 
         {/* Footer */}
-        <p className="text-center text-gray-400 text-xs pb-4">
+        <p className={`text-center text-xs pb-4 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
           Weather data from Open-Meteo • Air quality from Open-Meteo AQI
         </p>
 
