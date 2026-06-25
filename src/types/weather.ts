@@ -56,4 +56,33 @@ export interface WeatherResponse {
   daily: DailyForecast[];
   airQuality: AirQuality;
   aiSuggestion: string;
+  lat: number;
+  lon: number;
+}
+
+export interface AuthResponse {
+  token: string;
+  name: string;
+  email: string;
+  preferredUnit: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface FavoriteLocation {
+  id: string;
+  cityName: string;
+  country: string;
+  lat: number;
+  lon: number;
+  createdAt: string;
 }

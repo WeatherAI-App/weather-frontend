@@ -23,7 +23,7 @@ export default function WeatherIcon({
       case "clear sky":
         return isNight ? "🌙" : "☀️";
       case "partly cloudy":
-        return isNight ? "🌙" : "⛅"; // 👈 change 🌛 to 🌙
+        return isNight ? "🌙" : "⛅";
       case "overcast":
         return "☁️";
       case "foggy":
