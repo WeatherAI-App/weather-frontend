@@ -1,5 +1,5 @@
 import type { CurrentWeather, LocationData } from "../types/weather";
-import WeatherIcon from "./WeatherIcon";
+import WeatherAnimation from "./WeatherAnimation";
 
 interface Props {
   current: CurrentWeather;
@@ -54,11 +54,7 @@ export default function CurrentWeatherCard({
             {unit}
           </p>
         </div>
-        <WeatherIcon
-          condition={current.condition}
-          size="text-6xl md:text-8xl"
-          time={new Date().getHours() + ":00"}
-        />
+        <WeatherAnimation condition={current.condition} size={130} />
       </div>
 
       {/* Toggle unit */}
