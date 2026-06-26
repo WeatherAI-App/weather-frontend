@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import type { FavoriteLocation } from "../types/weather";
+import { API } from "../config/api";
 
-const API_BASE = "http://localhost:8080/api/locations";
+const API_BASE = API.LOCATIONS;
 
 export const useFavorites = (token: string | null) => {
   const [favorites, setFavorites] = useState<FavoriteLocation[]>([]);

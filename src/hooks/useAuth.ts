@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import type { AuthResponse, LoginRequest, RegisterRequest } from "../types/weather";
+import { API } from "../config/api";
 
-const API_BASE = "http://localhost:8080/api/auth";
+const API_BASE = API.AUTH;
 const TOKEN_KEY = "weatherai_token";
 const USER_KEY = "weatherai_user";
 

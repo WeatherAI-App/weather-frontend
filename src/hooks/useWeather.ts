@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import type { WeatherResponse } from "../types/weather";
+import { API } from "../config/api";
 
-const API_BASE = "http://localhost:8080/api/weather";
+const API_BASE = API.WEATHER;
 const LAST_CITY_KEY = "weatherai_last_city";
 const LAST_DATA_KEY = "weatherai_last_data";
 const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
