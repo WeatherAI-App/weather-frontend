@@ -20,16 +20,26 @@ export default function App() {
     logout,
     loading: authLoading,
     error: authError,
-    getToken,
+    evicted,
+    clearEvicted,
   } = useAuth();
 
-  const { data, loading, error, searchByCity, retryGPS, refresh, lastUpdated } =
-    useWeather();
+  const {
+    data,
+    loading,
+    error,
+    searchByCity,
+    searchByCoords,
+    retryGPS,
+    refresh,
+    lastUpdated,
+  } = useWeather();
 
   const { isDark, toggleDark } = useDarkMode();
 
-  const { favorites, addFavorite, removeFavorite, isFavorite } =
-    useFavorites(getToken());
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites(
+    user?.token ?? null,
+  );
 
   const [isCelsius, setIsCelsius] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
@@ -56,8 +66,8 @@ export default function App() {
     }
   };
 
-  const handleSelectFavorite = (city: string) => {
-    searchByCity(city);
+  const handleSelectFavorite = (lat: number, lon: number, cityName: string) => {
+    searchByCoords(lat, lon, cityName);
     setShowFavorites(false);
   };
 
@@ -135,6 +145,7 @@ export default function App() {
         {/* Search */}
         <SearchBar
           onSearch={searchByCity}
+          onSearchByCoords={searchByCoords}
           onRetryGPS={retryGPS}
           isDark={isDark}
         />
@@ -238,6 +249,54 @@ export default function App() {
           loading={authLoading}
           error={authError}
         />
+      )}
+
+      {/* Session eviction notice */}
+      {evicted && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div
+            className={`rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl text-center ${
+              isDark ? "bg-gray-800" : "bg-white"
+            }`}
+          >
+            <p className="text-4xl mb-4">🔐</p>
+            <h2
+              className={`text-lg font-bold mb-2 ${
+                isDark ? "text-white" : "text-gray-800"
+              }`}
+            >
+              Signed in elsewhere
+            </h2>
+            <p
+              className={`text-sm mb-6 ${
+                isDark ? "text-gray-400" : "text-gray-500"
+              }`}
+            >
+              Your account was signed in on another tab. You have been logged
+              out from this tab.
+            </p>
+            <button
+              onClick={() => {
+                clearEvicted();
+                setShowAuth(true);
+              }}
+              className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white
+                         font-semibold rounded-2xl transition"
+            >
+              Log in again
+            </button>
+            <button
+              onClick={clearEvicted}
+              className={`w-full py-3 mt-2 font-semibold rounded-2xl transition ${
+                isDark
+                  ? "text-gray-400 hover:text-white"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Continue without account
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import type { WeatherResponse } from "../types/weather";
 import { API } from "../config/api";
@@ -35,25 +35,26 @@ export const useWeather = () => {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
-  const fetchByCoords = async (lat: number, lon: number) => {
+  const fetchByCoords = useCallback(async (lat: number, lon: number, cityName?: string) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(`${API_BASE}/forecast`, {
-        params: { lat, lon }
-      });
+      const params: Record<string, unknown> = { lat, lon };
+      if (cityName) params.cityName = cityName;
+      const response = await axios.get(`${API_BASE}/forecast`, { params });
       setData(response.data);
       saveToCache(response.data);
       setLastUpdated(new Date().toLocaleTimeString());
       localStorage.removeItem(LAST_CITY_KEY);
-    } catch (err) {
-      setError("Failed to fetch weather data. Please try again.");
+    } catch (err: any) {
+      const msg = err.response?.data?.error || err.response?.data?.message;
+      setError(msg || "Failed to fetch weather data. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchByCity = async (city: string) => {
+  const fetchByCity = useCallback(async (city: string) => {
     try {
       setLoading(true);
       setError(null);
@@ -64,14 +65,38 @@ export const useWeather = () => {
       saveToCache(response.data);
       setLastUpdated(new Date().toLocaleTimeString());
       localStorage.setItem(LAST_CITY_KEY, city);
-    } catch (err) {
-      setError(`City "${city}" not found. Please try another name.`);
+    } catch (err: any) {
+      const msg = err.response?.data?.error || err.response?.data?.message;
+      setError(msg || `City "${city}" not found. Please try another name.`);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const searchByCity = (city: string) => fetchByCity(city);
+  const searchByCoords = (lat: number, lon: number, cityName?: string) => fetchByCoords(lat, lon, cityName);
+
+  const getGPSLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setError("Geolocation not supported by your browser.");
+      setLoading(false);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        fetchByCoords(latitude, longitude);
+      },
+      (err) => {
+        setError(
+          err.code === err.PERMISSION_DENIED
+            ? "Location access denied. Search for a city above."
+            : "Unable to get location. Search for a city above."
+        );
+        setLoading(false);
+      }
+    );
+  }, [fetchByCoords]);
 
   const refresh = () => {
     localStorage.removeItem(LAST_DATA_KEY);
@@ -91,24 +116,6 @@ export const useWeather = () => {
     getGPSLocation();
   };
 
-  const getGPSLocation = () => {
-    if (!navigator.geolocation) {
-      setError("Geolocation not supported by your browser.");
-      setLoading(false);
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        fetchByCoords(latitude, longitude);
-      },
-      () => {
-        setError("Location access denied.");
-        setLoading(false);
-      }
-    );
-  };
-
   useEffect(() => {
     const cached = loadFromCache();
     if (cached) {
@@ -123,7 +130,7 @@ export const useWeather = () => {
       return;
     }
     getGPSLocation();
-  }, []);
+  }, [fetchByCity, getGPSLocation]);
 
-  return { data, loading, error, searchByCity, retryGPS, refresh, lastUpdated };
+  return { data, loading, error, searchByCity, searchByCoords, retryGPS, refresh, lastUpdated };
 };

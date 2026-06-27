@@ -2,7 +2,7 @@ import type { FavoriteLocation } from "../types/weather";
 
 interface Props {
   favorites: FavoriteLocation[];
-  onSelect: (city: string) => void;
+  onSelect: (lat: number, lon: number, cityName: string) => void;
   onRemove: (id: string) => void;
   isDark: boolean;
 }
@@ -44,7 +44,7 @@ export default function FavoritesPanel({
               ${isDark ? "bg-gray-700" : "bg-gray-50"}`}
           >
             <button
-              onClick={() => onSelect(fav.cityName)}
+              onClick={() => onSelect(fav.lat, fav.lon, fav.cityName)}
               className="flex items-center gap-2 flex-1 text-left"
             >
               <span className="text-lg">📍</span>

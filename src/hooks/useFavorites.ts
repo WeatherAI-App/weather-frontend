@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import type { FavoriteLocation } from "../types/weather";
 import { API } from "../config/api";
@@ -12,7 +12,7 @@ export const useFavorites = (token: string | null) => {
     ? { headers: { Authorization: `Bearer ${token}` } }
     : null;
 
-  const getFavorites = async () => {
+  const getFavorites = useCallback(async () => {
     if (!token || !authHeader) return;
     try {
       const response = await axios.get<FavoriteLocation[]>(
@@ -22,9 +22,9 @@ export const useFavorites = (token: string | null) => {
     } catch (err) {
       console.error("Failed to fetch favorites:", err);
     }
-  };
+  }, [token]);
 
-  const addFavorite = async (
+  const addFavorite = useCallback(async (
     cityName: string, lat: number,
     lon: number, country: string
   ) => {
@@ -40,9 +40,9 @@ export const useFavorites = (token: string | null) => {
     } catch (err: any) {
       throw new Error(err.response?.data?.error || "Failed to add favorite");
     }
-  };
+  }, [token]);
 
-  const removeFavorite = async (id: string) => {
+  const removeFavorite = useCallback(async (id: string) => {
     if (!token || !authHeader) return;
     try {
       await axios.delete(`${API_BASE}/favorites/${id}`, authHeader);
@@ -50,7 +50,7 @@ export const useFavorites = (token: string | null) => {
     } catch (err) {
       console.error("Failed to remove favorite:", err);
     }
-  };
+  }, [token]);
 
   const isFavorite = (cityName: string): boolean => {
     return favorites.some(
@@ -60,7 +60,7 @@ export const useFavorites = (token: string | null) => {
 
   useEffect(() => {
     if (token) getFavorites();
-  }, [token]);
+  }, [token, getFavorites]);
 
   return { favorites, getFavorites, addFavorite, removeFavorite, isFavorite };
 };
