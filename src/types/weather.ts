@@ -58,6 +58,7 @@ export interface WeatherResponse {
   aiSuggestion: string;
   lat: number;
   lon: number;
+  timezone: string;
 }
 
 export interface AuthResponse {

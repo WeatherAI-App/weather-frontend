@@ -9,9 +9,23 @@ interface Props {
   onAddFavorite: () => void;
   isFavorite: boolean;
   isLoggedIn: boolean;
+  timezone: string;
 }
 
 const toF = (c: number) => Math.round((c * 9) / 5 + 32);
+
+const getLocalTime = (timezone: string): string => {
+  try {
+    return new Date().toLocaleTimeString("en-US", {
+      timeZone: timezone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } catch {
+    return "";
+  }
+};
 
 export default function CurrentWeatherCard({
   current,
@@ -21,6 +35,7 @@ export default function CurrentWeatherCard({
   onAddFavorite,
   isFavorite,
   isLoggedIn,
+  timezone,
 }: Props) {
   const temp = isCelsius ? current.temp : toF(current.temp);
   const feelsLike = isCelsius ? current.feelsLike : toF(current.feelsLike);
@@ -37,6 +52,10 @@ export default function CurrentWeatherCard({
         <h1 className="text-xl md:text-2xl font-bold truncate">
           {location.city}, {location.country}
         </h1>
+        {/* Local Time — add this */}
+        <p className="text-white/70 text-sm mb-4">
+          🕐 Local time: {getLocalTime(timezone)}
+        </p>
       </div>
 
       {/* Main temp */}
@@ -54,7 +73,11 @@ export default function CurrentWeatherCard({
             {unit}
           </p>
         </div>
-        <WeatherAnimation condition={current.condition} size={130} />
+        <WeatherAnimation
+          condition={current.condition}
+          size={130}
+          time={`${new Date().getHours()}:00`}
+        />
       </div>
 
       {/* Toggle unit */}

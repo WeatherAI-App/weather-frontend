@@ -201,6 +201,7 @@ export default function App() {
               onAddFavorite={handleAddFavorite}
               isFavorite={isFavorite(data.location.city)}
               isLoggedIn={!!user}
+              timezone={data.timezone}
             />
             <AISuggestionCard
               suggestion={data.aiSuggestion}
