@@ -38,7 +38,7 @@ export default function HourlyForecastCard({
             >
               {h.time}
             </p>
-            <WeatherAnimation condition={h.condition} size={40} time={h.time} />
+            <WeatherAnimation condition={h.condition} size={40} time={h.time} isDay={h.isDay} />
             <p
               className={`font-semibold ${isDark ? "text-white" : "text-gray-800"}`}
             >

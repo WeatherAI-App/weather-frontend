@@ -29,6 +29,7 @@ export interface HourlyForecast {
   humidity: number;
   windSpeed: number;
   condition: string;
+  isDay: boolean;
 }
 
 export interface DailyForecast {

@@ -4,24 +4,43 @@ interface Props {
   condition: string;
   size?: number;
   time?: string;
+  sunrise?: string;
+  sunset?: string;
+  isDay?: boolean;
 }
 
 export default function WeatherAnimation({
   condition,
   size = 120,
   time,
+  sunrise,
+  sunset,
+  isDay,
 }: Props) {
   const id = useId().replace(/:/g, "");
   const c = condition?.toLowerCase() || "";
 
-  // Check if it's nighttime (between 18:00 and 06:00)
-  const isNight = () => {
-    if (!time) return false;
-    const hour = parseInt(time.split(":")[0]);
-    return hour >= 18 || hour < 6;
+  const toMinutes = (hhmm: string): number => {
+    const parts = hhmm.trim().split(":");
+    const h = parseInt(parts[0], 10);
+    const m = parseInt(parts[1] ?? "0", 10);
+    if (isNaN(h) || isNaN(m)) return -1;
+    return h * 60 + m;
   };
 
-  const night = isNight();
+  const computeNight = (): boolean => {
+    if (!time) return false;
+    const t = toMinutes(time);
+    if (t < 0) return false;
+    const sr = sunrise ? toMinutes(sunrise) : -1;
+    const ss = sunset  ? toMinutes(sunset)  : -1;
+    if (sr >= 0 && ss >= 0) return t < sr || t >= ss;
+    return t < 360 || t >= 1080;
+  };
+
+  // isDay from Open-Meteo is authoritative when present (hourly forecast).
+  // Fall back to computing from sunrise/sunset or time for the current-weather card.
+  const night = isDay !== undefined ? !isDay : computeNight();
 
   if (c.includes("thunder") || c.includes("storm"))
     return <Thunderstorm size={size} id={id} />;
@@ -440,23 +459,18 @@ function Moon({ size, id }: { size: number; id: string }) {
         .star2-${id} { animation: star2-${id} 2.5s ease-in-out infinite; }
         .star3-${id} { animation: star1-${id} 1.8s ease-in-out infinite; }
       `}</style>
-      {/* Moon crescent only - no glow circle */}
-      <path
-        d="M 58 32 
-           C 38 32 22 48 22 68 
-           C 22 88 38 104 58 104 
-           C 72 104 84 96 90 84 
-           C 82 86 74 86 66 82 
-           C 52 74 44 60 44 44 
-           C 44 40 45 36 46 32 
-           C 50 32 54 32 58 32 Z"
-        fill="#FCD34D"
-      />
-      {/* Stars */}
-      <circle cx="82" cy="36" r="3" fill="white" className={`star1-${id}`} />
-      <circle cx="94" cy="52" r="2" fill="white" className={`star2-${id}`} />
-      <circle cx="76" cy="22" r="1.5" fill="white" className={`star3-${id}`} />
-      <circle cx="96" cy="38" r="1.5" fill="white" className={`star1-${id}`} />
+      <defs>
+        <mask id={`moon-mask-${id}`}>
+          <rect width="120" height="120" fill="white" />
+          {/* Shadow offset diagonally (right + up) → tilted crescent like AccuWeather */}
+          <circle cx="68" cy="48" r="30" fill="black" />
+        </mask>
+      </defs>
+      <circle cx="52" cy="65" r="36" fill="#FCD34D" mask={`url(#moon-mask-${id})`} />
+      <circle cx="96" cy="22" r="3" fill="white" className={`star1-${id}`} />
+      <circle cx="108" cy="44" r="2" fill="white" className={`star2-${id}`} />
+      <circle cx="86" cy="10" r="1.5" fill="white" className={`star3-${id}`} />
+      <circle cx="110" cy="28" r="1.5" fill="white" className={`star1-${id}`} />
     </svg>
   );
 }
@@ -468,18 +482,13 @@ function NightPartlyCloudy({ size, id }: { size: number; id: string }) {
         @keyframes drift-night-${id} { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
         .cloud-n-${id} { animation: drift-night-${id} 3s ease-in-out infinite; }
       `}</style>
-      {/* Moon crescent only */}
-      <path
-        d="M 36 18
-           C 24 18 14 28 14 40
-           C 14 52 24 62 36 62
-           C 44 62 51 58 55 51
-           C 50 52 45 52 40 49
-           C 32 44 27 36 27 27
-           C 27 24 28 21 29 18
-           C 31 18 34 18 36 18 Z"
-        fill="#FCD34D"
-      />
+      <defs>
+        <mask id={`nmoon-mask-${id}`}>
+          <rect width="120" height="120" fill="white" />
+          <circle cx="30" cy="30" r="15" fill="black" />
+        </mask>
+      </defs>
+      <circle cx="20" cy="42" r="20" fill="#FCD34D" mask={`url(#nmoon-mask-${id})`} />
       {/* Cloud in front */}
       <g className={`cloud-n-${id}`}>
         <g transform="translate(8, 22) scale(0.85)">

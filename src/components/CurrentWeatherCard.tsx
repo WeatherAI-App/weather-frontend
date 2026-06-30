@@ -10,6 +10,7 @@ interface Props {
   isFavorite: boolean;
   isLoggedIn: boolean;
   timezone: string;
+  isDay?: boolean;
 }
 
 const toF = (c: number) => Math.round((c * 9) / 5 + 32);
@@ -27,6 +28,23 @@ const getLocalTime = (timezone: string): string => {
   }
 };
 
+// Returns "HH:MM" (24-hour) in the location's timezone for day/night icon logic.
+const getLocalHHMM = (timezone: string): string => {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).formatToParts(new Date());
+    const h = parts.find((p) => p.type === "hour")?.value ?? "00";
+    const m = parts.find((p) => p.type === "minute")?.value ?? "00";
+    return `${h}:${m}`;
+  } catch {
+    return `${new Date().getHours()}:00`;
+  }
+};
+
 export default function CurrentWeatherCard({
   current,
   location,
@@ -36,6 +54,7 @@ export default function CurrentWeatherCard({
   isFavorite,
   isLoggedIn,
   timezone,
+  isDay,
 }: Props) {
   const temp = isCelsius ? current.temp : toF(current.temp);
   const feelsLike = isCelsius ? current.feelsLike : toF(current.feelsLike);
@@ -76,7 +95,10 @@ export default function CurrentWeatherCard({
         <WeatherAnimation
           condition={current.condition}
           size={130}
-          time={`${new Date().getHours()}:00`}
+          time={getLocalHHMM(timezone)}
+          sunrise={current.sunrise}
+          sunset={current.sunset}
+          isDay={isDay}
         />
       </div>
 

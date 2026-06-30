@@ -4,7 +4,7 @@ import { useDarkMode } from "./hooks/useDarkMode";
 import { useAuth } from "./hooks/useAuth";
 import { useFavorites } from "./hooks/useFavorites";
 import CurrentWeatherCard from "./components/CurrentWeatherCard";
-import AISuggestionCard from "./components/AISuggestionCard";
+import SuggestionCard from "./components/SuggestionCard";
 import AirQualityCard from "./components/AirQualityCard";
 import HourlyForecastCard from "./components/HourlyForecastCard";
 import DailyForecastCard from "./components/DailyForecastCard";
@@ -213,8 +213,9 @@ export default function App() {
               isFavorite={isFavorite(data.location.city)}
               isLoggedIn={!!user}
               timezone={data.timezone}
+              isDay={data.hourly[0]?.isDay}
             />
-            <AISuggestionCard
+            <SuggestionCard
               suggestion={data.aiSuggestion}
               bestTime={data.current.bestTimeOutside}
             />
